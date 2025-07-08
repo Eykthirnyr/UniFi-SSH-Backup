@@ -1,0 +1,9 @@
+{% extends 'layout.html' %}
+{% block content %}
+<h1 class="mb-3">Backups</h1>
+<ul>
+{% for e in entries %}
+  <li><a href="/download/{{ e.date }}/{{ e.name }}">{{ e.date }}/{{ e.name }}</a></li>
+{% endfor %}
+</ul>
+{% endblock %}
