@@ -1,0 +1,22 @@
+{% extends 'layout.html' %}
+{% block content %}
+<h1 class="mb-3">Backup Status</h1>
+<p class="text-muted">{{ current_time }}</p>
+<p>{{ status.message }}</p>
+{% if status.success and today_files %}
+  <p>Today's backups:</p>
+  <ul>
+  {% for f in today_files %}
+    <li><a href="/download/{{ today }}/{{ f }}">{{ f }}</a></li>
+  {% endfor %}
+  </ul>
+{% endif %}
+<a class="btn btn-primary" href="/trigger">Run Now</a>
+<a class="btn btn-secondary" href="/list">View Backups</a>
+<h2 class="mt-4">Console</h2>
+<pre style="background:#222;color:#eee;padding:1em;height:200px;overflow:auto">
+{% for line in logs %}
+{{ line }}\n
+{% endfor %}
+</pre>
+{% endblock %}
