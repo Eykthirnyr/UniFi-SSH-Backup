@@ -1,0 +1,7 @@
+{% extends 'layout.html' %}
+{% block content %}
+<h1 class="mb-3">Restart Required</h1>
+<p>The web port has changed. Restart the application to apply the new port ({{ port }}).</p>
+<a class="btn btn-primary me-2" href="/do_restart">Restart Now</a>
+<a class="btn btn-secondary" href="/settings">Cancel</a>
+{% endblock %}
