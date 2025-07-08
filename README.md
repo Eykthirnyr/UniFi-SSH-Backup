@@ -1,9 +1,25 @@
 # UniFi SSH Backup
 
-This project provides a small Flask web interface to automatically retrieve
-UniFi Network console backups over SSH. Backups are stored in dated folders
-under the `backups/` directory. The application can be configured to run a
-daily job and optionally send e-mail reports.
+This project provides a small Flask web application to fetch backups from a UniFi network console over SSH.  Each day the scheduled job copies the most recent `.unf` file from `/data/unifi/data/backup/autobackup` on the console and stores it under `backups/YYYYMMDD/` on the machine running the app.
+
+The interface exposes two pages:
+
+* **Home** – shows today's result, lets you run a backup immediately, and displays recent SSH output.
+* **Settings** – configure console credentials, backup time, e‑mail notifications, retry behaviour, and the web port.
+
+A separate page lists previous backups and allows downloading them.
+
+## Features
+
+- Automatic retrieval of UniFi console backups via SSH using `paramiko`.
+- Dated folders for each day's files. If a backup is triggered again on the same day, the new copy is prefixed with the current time.
+- When today's file is missing, the app falls back to the newest `.unf` available and notes the date and time it was created.
+- Configurable daily schedule with selectable time zone.
+- Optional retry when a backup fails with a user‑defined delay.
+- SMTP notifications with TLS support. You can send a test email and also test the SSH connection from the settings page.
+- Logs written to `logs/app.log` with timestamps in `dd/mm/yyyy` format. Log files rotate every 100&nbsp;000 lines.
+- Button in the settings page to download the latest log file.
+- Automatic installation of missing Python packages when the app starts.
 
 ## Requirements
 
@@ -13,36 +29,24 @@ daily job and optionally send e-mail reports.
 - paramiko
 - pytz
 
-Install dependencies with `pip install -r requirements.txt`.
-The application will also attempt to install any missing dependencies
-automatically when started.
+Install the dependencies with:
+
+```bash
+pip install -r requirements.txt
+```
+
+The application will also attempt to install any missing modules on startup.
 
 ## Running
 
-Adjust settings in the **Settings** tab of the web interface. Sections are grouped
-in cards for readability, and every field offers a tooltip. Start the
-application with:
+Launch the server using:
 
 ```bash
 python3 app.py
 ```
 
-The default web port is `5000` and can be changed in settings. The backup time
-and time zone are selected with interactive controls, and hovering any field
- shows a helpful tooltip. SMTP settings include an optional TLS checkbox, and
- mutually exclusive options to send a daily report or notify only when a backup fails. A button lets you send a test email, and another tests the SSH
-connection to your console. The sender address is taken from your SMTP user so
-no separate field is required. The application writes detailed logs to
-`logs/app.log` (starting with an "Application started" message) and rotates the
-file every 100000 lines. Log timestamps use the `dd/mm/yyyy` format.
-Flash messages are displayed briefly and the console on the home page
-shows only SSH related operations. You can download the latest log from the
-settings page.
-If a backup is triggered more than once in the same day, existing files are kept and the new copy is saved with the current time prefixed to its name. You can enable automatic retries on failure and choose the delay between attempts.
-The "View Backups" page lists each day with a success or failure note and links
-to download any retrieved files.
-If today's backup is not found, the application automatically falls back to the
-most recent `.unf` file in the `autobackup` folder. The backup and log pages
-note the modification time of that file so you know when it was created.
-Changing the web port requires a restart; the settings page will prompt you to
-restart the application when the port is modified.
+By default it listens on port `5000`. The port can be changed in the settings page; a restart prompt will appear when the port is modified.
+
+Open `http://<host>:<port>/` in your browser to access the interface. Configure the console IP, SSH credentials, backup time, time zone, and optional SMTP settings. Hover over a field for a short description. Flash messages appear briefly at the top when actions succeed or fail.
+
+Backups and log history are stored locally in the repository folder. The "View Backups" page lists the last 100 days with a success or failure note and download links.
