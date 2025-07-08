@@ -1,0 +1,83 @@
+{% extends 'layout.html' %}
+{% block content %}
+<h1 class="mb-3">Settings</h1>
+<form method="post">
+  <div class="mb-3">
+    <label class="form-label" data-bs-toggle="tooltip" title="IP address of your UniFi console">Console IP</label>
+    <input class="form-control" name="ip" value="{{ config.ip }}">
+  </div>
+  <div class="mb-3">
+    <label class="form-label" data-bs-toggle="tooltip" title="Port for SSH connection">SSH Port</label>
+    <input class="form-control" name="ssh_port" value="{{ config.ssh_port }}">
+  </div>
+  <div class="mb-3">
+    <label class="form-label" data-bs-toggle="tooltip" title="Username for SSH login">SSH User</label>
+    <input class="form-control" name="ssh_user" value="{{ config.ssh_user }}">
+  </div>
+  <div class="mb-3">
+    <label class="form-label" data-bs-toggle="tooltip" title="Password for SSH login">SSH Password</label>
+    <input class="form-control" type="password" name="ssh_pass" value="{{ config.ssh_pass }}">
+  </div>
+  <hr class="my-4">
+  <div class="mb-3">
+    <label class="form-label" data-bs-toggle="tooltip" title="Time of day to run the backup">Backup Time</label>
+    <input class="form-control" type="time" name="backup_time" value="{{ config.backup_time }}">
+  </div>
+  <div class="mb-3">
+    <label class="form-label" data-bs-toggle="tooltip" title="Time zone used for scheduling">Time Zone</label>
+    <select class="form-select" name="timezone">
+      {% for tz in timezones %}
+      <option value="{{ tz }}" {% if tz == config.timezone %}selected{% endif %}>{{ tz }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <hr class="my-4">
+  <h2 class="mb-3">SMTP</h2>
+  <div class="mb-3">
+    <label class="form-label" data-bs-toggle="tooltip" title="Mail server hostname">SMTP Host</label>
+    <input class="form-control" name="smtp_host" value="{{ config.smtp_host }}">
+  </div>
+  <div class="mb-3">
+    <label class="form-label" data-bs-toggle="tooltip" title="Mail server port">SMTP Port</label>
+    <input class="form-control" name="smtp_port" value="{{ config.smtp_port }}">
+  </div>
+  <div class="mb-3">
+    <label class="form-label" data-bs-toggle="tooltip" title="Username for SMTP authentication (optional)">SMTP User</label>
+    <input class="form-control" name="smtp_user" value="{{ config.smtp_user }}">
+  </div>
+  <div class="mb-3">
+    <label class="form-label" data-bs-toggle="tooltip" title="Password for SMTP authentication">SMTP Password</label>
+    <input class="form-control" type="password" name="smtp_pass" value="{{ config.smtp_pass }}">
+  </div>
+  <div class="mb-3">
+    <label class="form-label" data-bs-toggle="tooltip" title="Email address to send from">Sender Address</label>
+    <input class="form-control" name="smtp_from" value="{{ config.smtp_from }}">
+  </div>
+  <div class="mb-3">
+    <label class="form-label" data-bs-toggle="tooltip" title="Where reports and test emails are sent">Recipient Address</label>
+    <input class="form-control" name="smtp_to" value="{{ config.smtp_to }}">
+  </div>
+  <div class="form-check mb-3">
+    <input class="form-check-input" type="checkbox" name="smtp_tls" {% if config.smtp_tls %}checked{% endif %} data-bs-toggle="tooltip" title="Enable TLS when connecting to the mail server">
+    <label class="form-check-label">Use TLS</label>
+  </div>
+  <div class="form-check mb-3">
+    <input class="form-check-input" type="checkbox" name="send_report" {% if config.send_report %}checked{% endif %} data-bs-toggle="tooltip" title="Email backup success or failure each day">
+    <label class="form-check-label">Send Daily Report</label>
+  </div>
+  <div class="mb-3">
+    <button class="btn btn-secondary" type="submit" formaction="/test_email" data-bs-toggle="tooltip" title="Send an email using these settings">Send Test Email</button>
+  </div>
+  <hr class="my-4">
+  <div class="mb-3">
+    <label class="form-label" data-bs-toggle="tooltip" title="Identifier used in email subject">Client Name</label>
+    <input class="form-control" name="client_name" value="{{ config.client_name }}">
+  </div>
+  <div class="mb-3">
+    <label class="form-label" data-bs-toggle="tooltip" title="Port the web interface listens on">Web Port</label>
+    <input class="form-control" name="web_port" value="{{ config.web_port }}">
+  </div>
+  <button class="btn btn-primary mb-4" type="submit">Save</button>
+</form>
+<a class="btn btn-secondary mb-5" href="/logs/latest">Download Latest Log</a>
+{% endblock %}
