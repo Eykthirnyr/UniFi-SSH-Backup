@@ -21,6 +21,13 @@ A separate page lists previous backups and allows downloading them.
 - Button in the settings page to download the latest log file.
 - Automatic installation of missing Python packages when the app starts.
 
+![Screenshot_1](https://github.com/user-attachments/assets/a4eb38ed-3c47-4838-bb8d-621e028e12d9)
+
+![Screenshot_2](https://github.com/user-attachments/assets/faf5b850-6082-4726-a18e-ad15f7e80248)
+
+![Screenshot_3](https://github.com/user-attachments/assets/203ac4bb-2680-4b11-9b6f-3af0e8fd8969)
+
+
 ## Requirements
 
 - Python 3
