@@ -4,6 +4,7 @@ import datetime
 import base64
 import subprocess
 import smtplib
+import pytz
 from email.mime.text import MIMEText
 from flask import Flask, render_template, request, redirect, url_for, send_from_directory, flash
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -53,7 +54,8 @@ def load_config():
             'smtp_from': '',
             'send_report': False,
             'web_port': 5000,
-            'client_name': 'Client'
+            'client_name': 'Client',
+            'timezone': 'UTC'
         }
     with open(CONFIG_FILE, 'r') as f:
         cfg = json.load(f)
@@ -61,6 +63,8 @@ def load_config():
         cfg['ssh_pass'] = decode_pw(cfg['ssh_pass'])
     if 'smtp_pass' in cfg:
         cfg['smtp_pass'] = decode_pw(cfg['smtp_pass'])
+    if 'timezone' not in cfg:
+        cfg['timezone'] = 'UTC'
     return cfg
 
 
@@ -136,7 +140,8 @@ def run_backup():
 def schedule_job():
     scheduler.remove_all_jobs()
     t = datetime.datetime.strptime(config['backup_time'], '%H:%M').time()
-    scheduler.add_job(run_backup, 'cron', hour=t.hour, minute=t.minute, id='daily')
+    tz = pytz.timezone(config.get('timezone', 'UTC'))
+    scheduler.add_job(run_backup, 'cron', hour=t.hour, minute=t.minute, id='daily', timezone=tz)
 
 
 schedule_job()
@@ -145,12 +150,15 @@ scheduler.start()
 
 @app.route('/')
 def index():
-    today_str = datetime.date.today().strftime('%Y%m%d')
+    tz = pytz.timezone(config.get('timezone', 'UTC'))
+    now = datetime.datetime.now(tz)
+    today_str = now.strftime('%Y%m%d')
     today_dir = os.path.join(BACKUP_ROOT, today_str)
     today_files = []
     if os.path.exists(today_dir):
         today_files = os.listdir(today_dir)
-    return render_template('run.html', status=LAST_STATUS, logs=LOG_LINES, today_files=today_files, today=today_str)
+    current_time = now.strftime('%Y-%m-%d %H:%M %Z')
+    return render_template('run.html', status=LAST_STATUS, logs=LOG_LINES, today_files=today_files, today=today_str, current_time=current_time)
 
 
 @app.route('/trigger')
@@ -179,7 +187,7 @@ def list_backups():
 def settings():
     global config
     if request.method == 'POST':
-        for key in ['ip', 'ssh_port', 'ssh_user', 'ssh_pass', 'backup_time', 'smtp_host', 'smtp_port', 'smtp_user', 'smtp_pass', 'smtp_to', 'smtp_from', 'client_name']:
+        for key in ['ip', 'ssh_port', 'ssh_user', 'ssh_pass', 'backup_time', 'smtp_host', 'smtp_port', 'smtp_user', 'smtp_pass', 'smtp_to', 'smtp_from', 'client_name', 'timezone']:
             config[key] = request.form.get(key, '')
         config['send_report'] = True if request.form.get('send_report') == 'on' else False
         config['web_port'] = int(request.form.get('web_port', 5000))

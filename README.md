@@ -11,6 +11,7 @@ daily job and optionally send e-mail reports.
 - Flask
 - APScheduler
 - paramiko
+- pytz
 
 Install dependencies with `pip install -r requirements.txt`.
 
@@ -24,3 +25,5 @@ python3 app.py
 ```
 
 The default web port is `5000` and can be changed in settings.
+You can also specify the time zone used for scheduling backups and displaying
+the current time on the main page.
